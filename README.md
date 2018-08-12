@@ -2,6 +2,22 @@
 
 This repository is to make a note for potential interview related to NLP or Machine Learning position.
 
+## Why not sinusoidal function (cos, sin) are not widely used in neural network as an activation function?
+
+Following is my assumption.
+Unlike sigmoid function, cos and sin function are periodically oscilating between -1 ~ 1 
+
+
+**In neural networks with sigmoid function, positive value fires activation function to output as a positive reponse to input data to target class.**
+
+ This is because sigmoid function will have a converged value to 1 or 0 as input values increase.
+ However, two sinusoidal functions may not recognize positive response as positive since both negative response and positive can be in the same numerical value outputs.
+
+ I have implemented experiments (DIfferentActivations.ipynb) on MNIST data to observe loss and accuracy based on different activations.
+ My experiment shows cos and sin functions somehow produces faster learning, which is contradict to my assumption.
+
+ I still need to read more papers and literactures to grasp clear concepts on this..
+
 ## Probability
 What is prior probability P(D)?
 
