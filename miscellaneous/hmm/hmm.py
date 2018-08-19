@@ -2,6 +2,7 @@
 #### Easy ice cream problem for Hidden Markov Model training
 #### Forward - backward algorithm
 #### Implementation detail : http://www.cs.tut.fi/~sgn24006/PDF/L08-HMMs.pdf
+#### Find parameters (transition/observation probabilities) when unspecified that maximizes P(O|theta)
 import numpy as np
 
 ## Forward backward algorithm can help us compute the transition probability and observation probability from an observation sequence,
@@ -45,8 +46,8 @@ def initialrandom_distributions(time, states, obsindexes):
 	return pi, A, B
 
 
-# forward algorithm computes likelihood of observation sequence O, give Model
-# For example, P(3, 2, 3 | Lamgda)
+# 'forward algorithm computes likelihood of observation sequence O, give Model'
+# For example, joint probability P(State_t=j, 3, 2, 3 | Lamgda), 
 # This means when model knows about the parameters, we can calculate marginal distribution of observations
 def forward(observation, obsindexes, pi, A, B, time, states):
 	statesNum = len(states)
@@ -73,7 +74,8 @@ def forward(observation, obsindexes, pi, A, B, time, states):
 								B[state, obsindexes[observation[t]] ]
 	
 	return alpha
-
+# backward calculates p(x_T, x_T-1, ... x_t|State_t=j)
+# Hence, emitted probability -> p(x, state_t=j|M) = alpha*beta
 def backward(observation, obsindexes, A, B, time, states):
 	statesNum = len(states)
 	beta = np.zeros([statesNum, time])
@@ -97,7 +99,7 @@ def backward(observation, obsindexes, A, B, time, states):
 def expectation_step(observation, obsindexes, A, B, alpha, beta, states, time, debug):
 	statesNum = len(states)
 	# For gamma, we can compute all cases with one variable
-	# Gamma is probability of being in state i at time t
+	# Gamma is probability of being in state i at time t (conditional probability given observation sequences)
 	gamma = np.zeros([statesNum, time])
 	for t in range(time):
 		# denominator is P(O)
@@ -161,7 +163,9 @@ def maximization_step(observation, obsindexes, gamma, xi_allsequences, pi, A, B,
 		for nextState in range(statesNum):
 			nominator = sum( [xi_allsequences[t][state, nextState] for t in range(time-1)] )
 			A[state, nextState] = nominator / denominator
-
+	# Estimate the observation probabilities – the number of
+	# times being in state j and observing k between the
+	# number of times in state j.
 	for state in range(statesNum):
 		denominator = sum([gamma[state, t] for t in range(time) ])
 		for ice_creamNum, indx in obsindexes.items():
